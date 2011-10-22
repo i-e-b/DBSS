@@ -1,0 +1,11 @@
+DBSS
+====
+
+A toy spread-sheet engine with SQL backing
+
+TODO
+----
+ - Some instructions!
+ - More common functions
+ - Lookup by cell name
+
