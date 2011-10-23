@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using DBSS.Calculations;
 
-namespace DBSS_Test {
+namespace DBSS {
 	public partial class MainForm : Form {
 		private readonly Calculator calculator;
 
@@ -95,7 +96,9 @@ namespace DBSS_Test {
 							UpdateCell(new GridCell(), coord[0], coord[1]);
 							try {
 								RefreshCell(coord[0], coord[1], true);
-							} catch { }
+							} catch {
+								drop();
+							}
 						}
 					}
 					bigGrid1.ResetScrollPositions();
@@ -119,12 +122,13 @@ namespace DBSS_Test {
 			}
 		}
 
+		private static void drop() {}
+
 		private void NameBox_PreviewKeyDown (object sender, PreviewKeyDownEventArgs e) {
 			CheckSpecialKeys(e);
 			if (e.KeyCode != Keys.Return && e.KeyCode != Keys.Enter) return;
 
-			GridCell gc = bigGrid1.SelectedItem as GridCell;
-			if (gc == null) gc = new GridCell();
+			var gc = bigGrid1.SelectedItem as GridCell ?? new GridCell();
 			gc.Name = NameBox.Text;
 
 			// TODO: validate, updates
@@ -139,8 +143,7 @@ namespace DBSS_Test {
 			CheckSpecialKeys(e);
 			if (e.KeyCode != Keys.Return && e.KeyCode != Keys.Enter) return;
 
-			GridCell gc = bigGrid1.SelectedItem as GridCell;
-			if (gc == null) gc = new GridCell();
+			var gc = bigGrid1.SelectedItem as GridCell ?? new GridCell();
 			gc.Formula = FormulaBox.Text;
 			UpdateSelection(gc);
 			RefreshCell(bigGrid1.SelectionCoords.X, bigGrid1.SelectionCoords.Y, true);
@@ -154,8 +157,7 @@ namespace DBSS_Test {
 			CheckSpecialKeys(e);
 			if (e.KeyCode != Keys.Return && e.KeyCode != Keys.Enter) return;
 
-			GridCell gc = bigGrid1.SelectedItem as GridCell;
-			if (gc == null) gc = new GridCell();
+			var gc = bigGrid1.SelectedItem as GridCell ?? new GridCell();
 			gc.Value = ValueBox.Text;
 
 			// TODO: validation & updates
@@ -171,10 +173,8 @@ namespace DBSS_Test {
 		/// Recalculate a cell's value from it's formula
 		/// </summary>
 		private ResultSet RefreshCell (int x, int y, bool formulaChanged) {
-			GridCell gc = bigGrid1.Items[x, y] as GridCell;
-			if (gc == null) gc = new GridCell();
-			ResultSet rs = new ResultSet();
-			rs.Result = gc.Value;
+			var gc = bigGrid1.Items[x, y] as GridCell ?? new GridCell();
+			var rs = new ResultSet {Result = gc.Value};
 
 			if (formulaChanged) {// Clear out old refs and add new ones:
 				rs = RecalculateFromCell(x, y);
@@ -196,7 +196,7 @@ namespace DBSS_Test {
 			} catch (Exception ex) {
 				gc.Value = "Formula Error: " + ex.Message;
 			}
-			if (rpn.Count > 0) { // formula is non-empty
+			if (rpn != null && rpn.Count > 0) { // formula is non-empty
 				try {
 					rs = calculator.EvaluatePostfix(rpn, y, x);
 					gc.Value = rs.Result;
@@ -228,7 +228,7 @@ namespace DBSS_Test {
 			return rs;
 		}
 
-		private void Box_KeyPress (object sender, KeyPressEventArgs e) {
+		private static void Box_KeyPress (object sender, KeyPressEventArgs e) {
 			if (e == null) return;
 			if (e.KeyChar == '\n' || e.KeyChar == '\r') {
 				e.Handled = true;

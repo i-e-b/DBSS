@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace DBSS_Test {
+namespace DBSS.Calculations {
 	public class CValue {
-		protected string _coreValue;
-		protected decimal? _numericValue;
+		protected string CoreValue;
+		protected decimal? numericValue;
 
 		public decimal NumericValue {
 			get {
-				return _numericValue ?? 0;
+				return numericValue ?? 0;
 			}
 		}
 
@@ -18,8 +15,8 @@ namespace DBSS_Test {
 		/// New blank value
 		/// </summary>
 		public CValue () {
-			_coreValue = null;
-			_numericValue = null;
+			CoreValue = null;
+			numericValue = null;
 		}
 
 		/// <summary>
@@ -27,13 +24,13 @@ namespace DBSS_Test {
 		/// If 'tryNumeric' is true, will try to parse as a number first
 		/// </summary>
 		public CValue (string value, bool tryNumeric) {
-			decimal d = 0;
+			decimal d;
 			if (tryNumeric && decimal.TryParse(value ?? "", out d)) {
-				_coreValue = null;
-				_numericValue = d;
+				CoreValue = null;
+				numericValue = d;
 			} else {
-				_coreValue = value;
-				_numericValue = null;
+				CoreValue = value;
+				numericValue = null;
 			}
 		}
 
@@ -41,26 +38,26 @@ namespace DBSS_Test {
 		/// value from string. Will stay as a string even if it could be numeric
 		/// </summary>
 		public CValue (string value) {
-			_coreValue = value;
-			_numericValue = null;
+			CoreValue = value;
+			numericValue = null;
 		}
 
 		/// <summary>
 		/// value from a decimal
 		/// </summary>
 		public CValue (decimal value) {
-			_numericValue = value;
-			_coreValue = null;
+			numericValue = value;
+			CoreValue = null;
 		}
 
 		public bool IsNumeric {
-			get { return _numericValue != null; }
+			get { return numericValue != null; }
 		}
 		public bool IsString {
-			get { return _coreValue != null; }
+			get { return CoreValue != null; }
 		}
 		public override string ToString () {
-			return _coreValue ?? _numericValue.ToString();
+			return CoreValue ?? numericValue.ToString();
 		}
 
 		/// <summary>
@@ -68,9 +65,9 @@ namespace DBSS_Test {
 		/// </summary>
 		public static CValue operator + (CValue l, CValue r) {
 			if (l.IsNumeric && r.IsNumeric) {
-				return new CValue((decimal)(l.NumericValue + r.NumericValue));
+				return new CValue(l.NumericValue + r.NumericValue);
 			}
-			return new CValue(l.ToString() + r.ToString());
+			return new CValue("" + l + r);
 		}
 		/// <summary>
 		/// Either numeric subtract, or string removal

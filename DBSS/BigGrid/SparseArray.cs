@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-
-namespace System.Collections {
+﻿namespace System.Collections {
 	/// <summary>
 	/// Sparse Array acts as an n-dimensional array,
 	/// but uses memory where needed.
@@ -33,7 +30,7 @@ namespace System.Collections {
 		}
 
 		protected ulong IndexToHash (int[] indices) {
-			if (indices == null | indices.Length < 1)
+			if (indices == null || indices.Length < 1)
 				throw new ArgumentException("Null indices passed to hash function");
 			if (indices.Length != dimensions)
 				throw new ArgumentException("The number of indices must match the number of dimensions");
@@ -54,7 +51,7 @@ namespace System.Collections {
 		}
 
 		public int[] HashToIndex (ulong hash) {
-			int[] res = new int[dimensions];
+			var res = new int[dimensions];
 			int i = -1, r = 0;
 			for (ulong j = 1; j < ulong.MaxValue && j > 0; j <<= 1) {
 				i = (i + 1) % dimensions;
@@ -69,7 +66,7 @@ namespace System.Collections {
 		public bool IsSynchronized { get { return false; } }
 		public int Count { get { return hashtable.Count; } }
 		public int Rank { get { return dimensions; } }
-		public object SyncRoot { get { return null; } }
+		public object SyncRoot { get { return this; } }
 
 		public void CopyTo (Array array, int index) {
 			throw new NotImplementedException();
@@ -95,11 +92,11 @@ namespace System.Collections {
 		}
 
 		public object GetValue (int index) {
-			return GetValue(new int[] { index });
+			return GetValue(new[] { index });
 		}
 
 		public object GetValue (int index1, int index2) {
-			return GetValue(new int[] { index1, index2 });
+			return GetValue(new[] { index1, index2 });
 		}
 
 		public void RemoveItemByUniqueKey (ulong key) {
@@ -111,11 +108,11 @@ namespace System.Collections {
 		}
 
 		public ulong GetUniqueKey (int index) {
-			return IndexToHash(new int[] { index });
+			return IndexToHash(new[] { index });
 		}
 
 		public ulong GetUniqueKey (int index1, int index2) {
-			return IndexToHash(new int[] { index1, index2 });
+			return IndexToHash(new[] { index1, index2 });
 		}
 
 
@@ -135,20 +132,18 @@ namespace System.Collections {
 		}
 
 		public void SetValue (object value, int index) {
-			SetValue(value, new int[] { index });
+			SetValue(value, new[] { index });
 		}
 
 		public void SetValue (object value, int index1, int index2) {
-			SetValue(value, new int[] { index1, index2 });
+			SetValue(value, new[] { index1, index2 });
 		}
 
 		private class SparseArrayEnumerator : IEnumerator {
-			private IDictionaryEnumerator dict;
-			private SortedList sl;
-			private SparseArray parent;
+			private readonly IDictionaryEnumerator dict;
+			private readonly SortedList sl;
 
 			public SparseArrayEnumerator (SparseArray array) {
-				parent = array;
 				sl = new SortedList(array.hashtable);
 				dict = sl.GetEnumerator();
 			}
@@ -156,10 +151,9 @@ namespace System.Collections {
 			public void Reset () { dict.Reset(); }
 			public bool MoveNext () { return dict.MoveNext(); }
 			public object Current { get { return dict.Value; } }
-			public int[] Index { get { return parent.HashToIndex((ulong)dict.Key); } }
 		}
 
-		public System.Collections.IEnumerator GetEnumerator () {
+		public IEnumerator GetEnumerator () {
 			return new SparseArrayEnumerator(this);
 		}
 

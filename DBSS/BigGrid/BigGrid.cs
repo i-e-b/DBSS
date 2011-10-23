@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 
-namespace DBSS_Test.BigGrid {
+namespace DBSS.BigGrid {
 	public partial class BigGrid : UserControl {
-		private SparseArray _items;
+		private SparseArray items;
 
 		/// <summary>
 		/// Sparse array of items to display
 		/// </summary>
 		public SparseArray Items {
-			get { return _items; }
+			get { return items; }
 			set {
 				if (value == null) return;
 				if (value.Rank != 2) throw new Exception("BigGrid only displays rank 2 arrays");
-				_items = value;
-				sheetView.DisplayItems = _items;
+				items = value;
+				sheetView.DisplayItems = items;
 			}
 		}
 
@@ -30,16 +26,14 @@ namespace DBSS_Test.BigGrid {
 		/// </summary>
 		public object SelectedItem {
 			get {
-				if (Items == null) return null;
-				return Items[sheetView.selectionX, sheetView.selectionY];
+				return Items == null ? null : Items[sheetView.selectionX, sheetView.selectionY];
 			}
 			set {
-				if (Items != null) {
-					if (value != null) {
-						Items[sheetView.selectionX, sheetView.selectionY] = value;
-					} else {
-						Items.RemoveItemByUniqueKey(Items.GetUniqueKey(sheetView.selectionX, sheetView.selectionY));
-					}
+				if (Items == null) return;
+				if (value != null) {
+					Items[sheetView.selectionX, sheetView.selectionY] = value;
+				} else {
+					Items.RemoveItemByUniqueKey(Items.GetUniqueKey(sheetView.selectionX, sheetView.selectionY));
 				}
 			}
 		}
@@ -107,7 +101,7 @@ namespace DBSS_Test.BigGrid {
 
 			for (int y = t; y <= b; y++) {
 				for (int x = l; x <= r; x++) {
-					GridCell c = Items[x, y] as GridCell;
+					var c = Items[x, y] as GridCell;
 					if (c != null) {
 						bits.Add(Items.GetUniqueKey(x, y), c);
 					}

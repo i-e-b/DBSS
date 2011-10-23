@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace DBSS_Test {
+namespace DBSS {
 	public class GridCell {
 		public string Name { get; set; }
 		public string Formula { get; set; }
@@ -15,7 +12,7 @@ namespace DBSS_Test {
 			if (!String.IsNullOrEmpty(Value)) return Value;
 			if (!String.IsNullOrEmpty(Formula)) return Formula;
 
-			return null;
+			return "";
 		}
 
 		public bool IsEmpty () {

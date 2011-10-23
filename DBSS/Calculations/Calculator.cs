@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections;
 
-namespace DBSS_Test {
+namespace DBSS.Calculations {
 
 	public enum TokenClass {
 		Operand,
@@ -44,11 +43,10 @@ namespace DBSS_Test {
 		/// </summary>
 		public bool ShouldDisplace (Token other) {
 			if (other.Class != TokenClass.BinaryOperator) return false;
-			if (this.Direction == Association.LeftToRight) {
-				return other.Precedence >= this.Precedence;
-			} else {
-				return other.Precedence > this.Precedence;
+			if (Direction == Association.LeftToRight) {
+				return other.Precedence >= Precedence;
 			}
+			return other.Precedence > Precedence;
 		}
 
 		public override string ToString () {
@@ -69,9 +67,9 @@ namespace DBSS_Test {
 		/// </summary>
 		public static List<Token> Tokens (this string input) {
 			// (strings) | (nums, funcs, vars) | (sci nums)
-			Regex r = new Regex(@"(\['.*?'\])|([^0-9a-zA-Z.\$])|([0-9.]+e[+\-]?[0-9]+)");
+			var r = new Regex(@"(\['.*?'\])|([^0-9a-zA-Z.\$])|([0-9.]+e[+\-]?[0-9]+)");
 			// anything but alpha numeric or decimals gets split
-			List<Token> output = new List<Token>();
+			var output = new List<Token>();
 			// return splits, including split characters (because of capture group in regex)
 
 			string[] frags = r.Split(input);
@@ -79,36 +77,38 @@ namespace DBSS_Test {
 			foreach (string frag in frags) {
 				if (String.IsNullOrEmpty(frag)) continue;
 
-				Token t = new Token(frag);
+				var t = new Token(frag);
 
-				Token last = (output.Count > 0) ? (output.Last()) : (null);
+				var last = (output.Count > 0) ? (output.Last()) : (null);
 
 				#region check for uniary prefix operators
 				if (t.Class == TokenClass.BinaryOperator) {
 					if (output.Count < 1) {
 						t.Class = TokenClass.UniaryPrefix;
 					} else {
-						switch (last.Class) {
-							case TokenClass.BinaryOperator:
-							case TokenClass.UniaryPostfix:
-							case TokenClass.OpenBracket:
-							case TokenClass.ArgumentSeperator:
-								t.Class = TokenClass.UniaryPrefix;
-								break;
-						}
+						if (last != null)
+							switch (last.Class) {
+								case TokenClass.BinaryOperator:
+								case TokenClass.UniaryPostfix:
+								case TokenClass.OpenBracket:
+								case TokenClass.ArgumentSeperator:
+									t.Class = TokenClass.UniaryPrefix;
+									break;
+							}
 					}
 				}
 				#endregion
 
 				#region check for functions
 				// a name followed by an open bracket is taken to be a function
-				if (t.Class == TokenClass.OpenBracket
-					&& output.Count > 0
-					&& last.Class == TokenClass.Name) {
+				if (last != null)
+					if (t.Class == TokenClass.OpenBracket
+					    && output.Count > 0
+					    && last.Class == TokenClass.Name) {
 
-					last.Class = TokenClass.Function;
-					last.Value = "/" + last; // easier to find functions, plus vars and fucntions can share a name
-				}
+						last.Class = TokenClass.Function;
+						last.Value = "/" + last; // easier to find functions, plus vars and fucntions can share a name
+					}
 				#endregion
 
 				output.Add(t);
@@ -132,7 +132,7 @@ namespace DBSS_Test {
 				case ")": return TokenClass.CloseBracket;
 				case ",": return TokenClass.ArgumentSeperator;
 				default: // not a simple token. Check for number or other
-					double dummy = 0;
+					double dummy;
 					if (double.TryParse(input, out dummy)) return TokenClass.Operand; // inefficient, but gets the job done
 					return TokenClass.Name; // no idea what this token is -- should be a var or func name.
 			}
@@ -195,7 +195,7 @@ namespace DBSS_Test {
 	}
 
 	public class Calculator {
-		private Functions funcs;
+		private readonly Functions funcs;
 
 		public Calculator (SparseArray array) {
 			funcs = new Functions(array);
@@ -206,8 +206,8 @@ namespace DBSS_Test {
 		/// a postfix expression string
 		/// </summary>
 		public Stack<string> InfixToPostfix (string expression) {
-			Stack<Token> operands = new Stack<Token>();
-			Stack<Token> postfix = new Stack<Token>();
+			var operands = new Stack<Token>();
+			var postfix = new Stack<Token>();
 
 			foreach (Token token in expression.Tokens()) {
 				if (token.IsEmpty) continue;
@@ -221,7 +221,7 @@ namespace DBSS_Test {
 							switch (operands.Peek().Value) {
 								case "-":
 									// turn a uniary minus and operand into a negative operand
-									Token ob = operands.Pop();
+									operands.Pop();
 									postfix.Push(token);
 									postfix.Push(new Token("-1"));
 									postfix.Push(new Token("*"));
@@ -327,14 +327,14 @@ namespace DBSS_Test {
 		public ResultSet EvaluatePostfix (Stack<string> postfix, int row, int column) {
 			// very simple for the moment, doesn't handle variables or functions
 
-			ResultSet @out = new ResultSet();
+			var @out = new ResultSet();
 
-			Stack<CValue> values = new Stack<CValue>();
+			var values = new Stack<CValue>();
 			values.Push(new CValue((decimal)0.0)); // quick hack to deal with leading uniary operators
 
 			foreach (string token in postfix/*.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)*/) {
 				if (String.IsNullOrEmpty(token)) continue;
-				decimal value = 0;
+				decimal value;
 				if (decimal.TryParse(token, out value)) {
 					values.Push(new CValue(value));
 					continue;
@@ -369,7 +369,7 @@ namespace DBSS_Test {
 					case "!":
 						l = CValue.Floor(values.Pop());
 						decimal f = 1;
-						for (int c = (int)l.NumericValue; c > 0; c--) { f *= c; }
+						for (var c = (int)l.NumericValue; c > 0; c--) { f *= c; }
 						values.Push(new CValue(f));
 						break;
 

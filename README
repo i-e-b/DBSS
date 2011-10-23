@@ -3,9 +3,45 @@ DBSS
 
 A toy spread-sheet engine with SQL backing
 
+Each cell can have a name, a value and a formula.
+Names hide but don't overwrite formulas and values (like giving a function or constant a name)
+Formulae update values based on calculations
+Values are values.
+
+Formulae DON'T start in '=' (this isn't Excel!)
+Formulae are infix, support functions and scientific notation of large numbers.
+Functions are nestable.
+Operators:
+	+  add
+	-  substract
+	*  multiply
+	/  divide
+	^  exponent
+	%  modulo
+	!  
+	
+Constants defined: (case insensitive)
+	pi - Value of PI
+	e  - Value of e
+	R  - Row (Y-value) of current cell
+	C  - Column (X-value) of current cell
+	
+Functions defined: (case insensitive)
+LOOKUP functions (co-ords are absolute. To get relative co-ordinates, do like "$(R-1,C)")
+	$(x,y)  - value of cell at co-ordinates given
+	$f(x,y) - function string of cell at co-ordinates given
+	$n(x,y) - name of cell at co-ordinates given
+	
+	floor(x) - integer value from floor of float
+	ceil(x)  - integer value from ceiling of float
+	sqrt(x)  - square root of x
+	cos(x)   - Cosine of x
+	sin(x)   - Sine of x
+	sign(x)  - *ve sign of x (-1, 0, 1)
+
 TODO
 ----
- - Some instructions!
  - More common functions
  - Lookup by cell name
+ - Use named cells as functions in formulae
 

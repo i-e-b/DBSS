@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 
-namespace DBSS_Test.BigGrid {
+namespace DBSS.BigGrid {
 	public partial class SheetView : Control {
-		private bool _moving = false;
+		private bool moving;
 		public SparseArray DisplayItems { get; set; }
 		public Size CellSize { get; set; }
-		//public Point Position { get; set; }
 		public int px { get; set; }
 		public int py { get; set; }
 
@@ -62,52 +56,47 @@ namespace DBSS_Test.BigGrid {
 				else selectionX++;
 				SetRangeToSelection();
 				return;
-			} else {
-				if (alt_direction) selectionY++;
-				else selectionX++;
-
-				if (alt_direction) {
-					if (selectionY > Math.Max(RangeTop, RangeBottom)) {
-						selectionX++;
-						selectionY = Math.Min(RangeTop, RangeBottom);
-					}
-					if (selectionX > Math.Max(RangeLeft, RangeRight)) {
-						selectionX = Math.Min(RangeLeft, RangeRight);
-						selectionY = Math.Min(RangeTop, RangeBottom);
-					}
-				} else {
-
-
-					if (selectionX > Math.Max(RangeLeft, RangeRight)) {
-						selectionY++;
-						selectionX = Math.Min(RangeLeft, RangeRight);
-					}
-					if (selectionY > Math.Max(RangeTop, RangeBottom)) {
-						selectionY = Math.Min(RangeTop, RangeBottom);
-						selectionX = Math.Min(RangeLeft, RangeRight);
-					}
-
-
-				}
 			}
+			if (alt_direction) selectionY++;
+			else selectionX++;
 
+			if (alt_direction) {
+				if (selectionY > Math.Max(RangeTop, RangeBottom)) {
+					selectionX++;
+					selectionY = Math.Min(RangeTop, RangeBottom);
+				}
+				if (selectionX > Math.Max(RangeLeft, RangeRight)) {
+					selectionX = Math.Min(RangeLeft, RangeRight);
+					selectionY = Math.Min(RangeTop, RangeBottom);
+				}
+			} else {
+
+
+				if (selectionX > Math.Max(RangeLeft, RangeRight)) {
+					selectionY++;
+					selectionX = Math.Min(RangeLeft, RangeRight);
+				}
+				if (selectionY > Math.Max(RangeTop, RangeBottom)) {
+					selectionY = Math.Min(RangeTop, RangeBottom);
+					selectionX = Math.Min(RangeLeft, RangeRight);
+				}
+
+
+			}
 		}
 
 		private Point CellForMouseClick (Point location) {
 			if (CellSize.Width == 0 || CellSize.Height == 0) return new Point(-1,-1);
 
-			int rx, ry; // rule-line positions
-			int vx, vy; // visible cell extents
-
-			vx = (this.Width / CellSize.Width) + 1;
-			vy = (this.Height / CellSize.Height) + 1;
+			int vx = (Width / CellSize.Width) + 1;
+			int vy = (Height / CellSize.Height) + 1;
 
 			// Draw content
 			for (int y = py; y <= py + vy; y++) {
-				ry = ((y - py) * CellSize.Height);
+				int ry = ((y - py) * CellSize.Height); // rule-line positions
 				for (int x = px; x <= px + vx; x++) {
-					rx = ((x - px) * CellSize.Width);
-					Rectangle cell = new Rectangle(rx, ry, CellSize.Width, CellSize.Height);
+					int rx = ((x - px) * CellSize.Width); // rule-line positions
+					var cell = new Rectangle(rx, ry, CellSize.Width, CellSize.Height);
 
 					if (cell.Contains(location)) {
 						return new Point(x,y);
@@ -119,7 +108,7 @@ namespace DBSS_Test.BigGrid {
 
 		protected override void OnMouseDown (MouseEventArgs e) {
 			if (e.Button == MouseButtons.Left) {
-				_moving = true; // hack for Vista's dumb windowing
+				moving = true; // hack for Vista's dumb windowing
 				Point p = CellForMouseClick(e.Location);
 				RangeLeft = p.X;
 				RangeTop = p.Y;
@@ -127,12 +116,12 @@ namespace DBSS_Test.BigGrid {
 				RangeBottom = p.Y;
 				selectionX = p.X;
 				selectionY = p.Y;
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 
 		protected override void OnMouseMove (MouseEventArgs e) {
-			if (e.Button == MouseButtons.Left && _moving) {
+			if (e.Button == MouseButtons.Left && moving) {
 				Point p = CellForMouseClick(e.Location);
 
 				int dx = p.X - RangeRight;
@@ -140,16 +129,14 @@ namespace DBSS_Test.BigGrid {
 				if (dx != 0 || dy != 0) {
 					RangeRight = p.X;
 					RangeBottom = p.Y;
-					this.Invalidate();
+					Invalidate();
 				}
 			}
 		}
 
 		protected override void OnMouseUp (MouseEventArgs e) {
-			_moving = false; // hack for Vista's dumb windowing
-			/*selectionX = Math.Min(RangeLeft, RangeRight);
-			selectionY = Math.Min(RangeTop, RangeBottom);*/
-			this.Invalidate();
+			moving = false; // hack for Vista's dumb windowing
+			Invalidate();
 			if (SelectedIndexChanged != null) SelectedIndexChanged(this, new EventArgs());
 		}
 
@@ -158,16 +145,15 @@ namespace DBSS_Test.BigGrid {
 			if (DisplayItems == null) DisplayItems = new SparseArray(2);
 
 			int rx, ry; // rule-line positions
-			int vx, vy; // visible cell extents
 
-			vx = (this.Width / CellSize.Width) + 1;
-			vy = (this.Height / CellSize.Height) + 1;
+			int vx = (Width / CellSize.Width) + 1;
+			int vy = (Height / CellSize.Height) + 1;
 
 			
-			BufferedGraphics bg = BufferedGraphicsManager.Current.Allocate(pe.Graphics, this.Bounds);
+			BufferedGraphics bg = BufferedGraphicsManager.Current.Allocate(pe.Graphics, Bounds);
 			Graphics g = bg.Graphics;
 
-			Pen p = new Pen(Brushes.Gray, 2);
+			var p = new Pen(Brushes.Gray, 2);
 			Brush odd = Brushes.White;
 			Brush even = Brushes.WhiteSmoke;
 			Brush sel_even = SystemBrushes.Highlight;
@@ -211,7 +197,7 @@ namespace DBSS_Test.BigGrid {
 			bg.Render();
 		}
 
-		private Color Lighter (Color color, int v) {
+		private static Color Lighter (Color color, int v) {
 			int r = color.R + v;
 			int g = color.G + v;
 			int b = color.B + v;

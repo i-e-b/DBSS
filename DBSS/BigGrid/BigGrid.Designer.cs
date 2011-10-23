@@ -1,4 +1,4 @@
-﻿namespace DBSS_Test.BigGrid {
+﻿namespace DBSS.BigGrid {
 	partial class BigGrid {
 		/// <summary> 
 		/// Required designer variable.
@@ -25,7 +25,7 @@
 		private void InitializeComponent () {
 			this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
 			this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
-			this.sheetView = new DBSS_Test.BigGrid.SheetView();
+			this.sheetView = new SheetView();
 			this.SuspendLayout();
 			// 
 			// hScrollBar1

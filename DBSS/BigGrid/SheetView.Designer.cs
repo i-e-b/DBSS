@@ -1,4 +1,4 @@
-﻿namespace DBSS_Test.BigGrid {
+﻿namespace DBSS.BigGrid {
 	partial class SheetView {
 		/// <summary>
 		/// Required designer variable.

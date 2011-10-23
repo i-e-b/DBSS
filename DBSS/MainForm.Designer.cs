@@ -1,4 +1,4 @@
-﻿namespace DBSS_Test {
+﻿namespace DBSS {
 	partial class MainForm {
 		/// <summary>
 		/// Required designer variable.
@@ -29,7 +29,7 @@
 			this.FormulaBox = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.ValueBox = new System.Windows.Forms.TextBox();
-			this.bigGrid1 = new DBSS_Test.BigGrid.BigGrid();
+			this.bigGrid1 = new DBSS.BigGrid.BigGrid();
 			this.SuspendLayout();
 			// 
 			// NameBox
@@ -43,7 +43,7 @@
 			this.NameBox.Size = new System.Drawing.Size(496, 18);
 			this.NameBox.TabIndex = 1;
 			this.NameBox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.NameBox_PreviewKeyDown);
-			this.NameBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Box_KeyPress);
+			this.NameBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(Box_KeyPress);
 			// 
 			// label1
 			// 
@@ -74,7 +74,7 @@
 			this.FormulaBox.Size = new System.Drawing.Size(496, 18);
 			this.FormulaBox.TabIndex = 2;
 			this.FormulaBox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.FormulaBox_PreviewKeyDown);
-			this.FormulaBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Box_KeyPress);
+			this.FormulaBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(Box_KeyPress);
 			// 
 			// label3
 			// 
@@ -96,7 +96,7 @@
 			this.ValueBox.Size = new System.Drawing.Size(496, 18);
 			this.ValueBox.TabIndex = 0;
 			this.ValueBox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ValueBox_PreviewKeyDown);
-			this.ValueBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Box_KeyPress);
+			this.ValueBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(Box_KeyPress);
 			// 
 			// bigGrid1
 			// 
@@ -136,7 +136,7 @@
 
 		#endregion
 
-		private DBSS_Test.BigGrid.BigGrid bigGrid1;
+		private DBSS.BigGrid.BigGrid bigGrid1;
 		private System.Windows.Forms.TextBox NameBox;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;

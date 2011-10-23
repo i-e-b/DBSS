@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 
-namespace DBSS_Test {
+namespace DBSS.Calculations {
 	/// <summary>
 	/// Function and variable lookup,
 	/// uses the DBSS for variables and the lookup function '$(,)'.
@@ -19,25 +19,25 @@ namespace DBSS_Test {
 	///		'$n(x,y)' - name of cell as a string. Empty if no name.
 	/// </remarks>
 	public class Functions {
-		private SparseArray _sourceArray;
+		private readonly SparseArray sourceArray;
 
 		public Functions (SparseArray array) {
-			_sourceArray = array;
+			sourceArray = array;
 		}
 
 		public List<CellReference> HandleFunction (string token, Stack<CValue> values, int x, int y) {
-			List<CellReference> refs = new List<CellReference>();
+			var refs = new List<CellReference>();
 			if (token.StartsWith("/")) {
 				if (!function(token.Substring(1), values, x, y, refs)) throw new Exception("Unrecognised function");
 			} else {
-				if (!variable(token, values, x, y, refs)) throw new Exception("Unrecognised name or constant");
+				if (!Variable(token, values, x, y, refs)) throw new Exception("Unrecognised name or constant");
 			}
 			return refs;
 		}
 
 		// Note: due to the way the tokeniser works, any non-alphanumeric name can only be 1 character long
 
-		private bool variable (string token, Stack<CValue> values, int x, int y, List<CellReference> refs) {
+		private static bool Variable (string token, Stack<CValue> values, int x, int y, List<CellReference> refs) {
 			switch (token.ToLowerInvariant()) {
 				case "pi":
 				case "π":
@@ -47,10 +47,10 @@ namespace DBSS_Test {
 					values.Push(new CValue((decimal)Math.E));
 					return true;
 				case "r":
-					values.Push(new CValue((decimal)y));
+					values.Push(new CValue(y));
 					return true;
 				case "c":
-					values.Push(new CValue((decimal)x));
+					values.Push(new CValue(x));
 					return true;
 			}
 			return false;
@@ -59,9 +59,9 @@ namespace DBSS_Test {
 		private bool function (string token, Stack<CValue> values, int x, int y, List<CellReference> refs) {
 			switch (token.ToLowerInvariant()) {
 				case "$": {// value at coords
-						int rx = (int)values.Pop().NumericValue;
-						int ry = (int)values.Pop().NumericValue;
-						GridCell g = _sourceArray[rx, ry] as GridCell;
+						var rx = (int)values.Pop().NumericValue;
+						var ry = (int)values.Pop().NumericValue;
+						var g = sourceArray[rx, ry] as GridCell;
 
 						if (g == null) values.Push(new CValue());
 						else values.Push(new CValue(g.Value, true));
@@ -70,9 +70,9 @@ namespace DBSS_Test {
 						return true;
 					}
 				case "$f": {// function string at coords
-						int rx = (int)values.Pop().NumericValue;
-						int ry = (int)values.Pop().NumericValue;
-						GridCell g = _sourceArray[rx, ry] as GridCell;
+						var rx = (int)values.Pop().NumericValue;
+						var ry = (int)values.Pop().NumericValue;
+						var g = sourceArray[rx, ry] as GridCell;
 
 						if (g == null) values.Push(new CValue());
 						else values.Push(new CValue(g.Formula));
@@ -81,9 +81,9 @@ namespace DBSS_Test {
 						return true;
 					}
 				case "$n": {// name at coords
-						int rx = (int)values.Pop().NumericValue;
-						int ry = (int)values.Pop().NumericValue;
-						GridCell g = _sourceArray[rx, ry] as GridCell;
+						var rx = (int)values.Pop().NumericValue;
+						var ry = (int)values.Pop().NumericValue;
+						var g = sourceArray[rx, ry] as GridCell;
 
 						if (g == null) values.Push(new CValue());
 						else values.Push(new CValue(g.Name));
@@ -99,6 +99,15 @@ namespace DBSS_Test {
 					return true;
 				case "sqrt":
 					values.Push(new CValue((decimal)Math.Sqrt((double)values.Pop().NumericValue)));
+					return true;
+				case "cos":
+					values.Push(new CValue((decimal)Math.Cos((double)values.Pop().NumericValue)));
+					return true;
+				case "sin":
+					values.Push(new CValue((decimal)Math.Sin((double)values.Pop().NumericValue)));
+					return true;
+				case "sign":
+					values.Push(new CValue(Math.Sign((double)values.Pop().NumericValue)));
 					return true;
 			}
 			return false;
