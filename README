@@ -27,7 +27,7 @@ Constants defined: (case insensitive)
 	C  - Column (X-value) of current cell
 	
 Functions defined: (case insensitive)
-LOOKUP functions (co-ords are absolute. To get relative co-ordinates, do like "$(R-1,C)")
+LOOKUP functions (co-ords are absolute. To get relative co-ordinates, do like "$(C,R-1)")
 	$(x,y)  - value of cell at co-ordinates given
 	$f(x,y) - function string of cell at co-ordinates given
 	$n(x,y) - name of cell at co-ordinates given
