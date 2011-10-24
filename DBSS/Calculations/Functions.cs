@@ -59,8 +59,8 @@ namespace DBSS.Calculations {
 		private bool function (string token, Stack<CValue> values, int x, int y, List<CellReference> refs) {
 			switch (token.ToLowerInvariant()) {
 				case "$": {// value at coords
-						var rx = (int)values.Pop().NumericValue;
 						var ry = (int)values.Pop().NumericValue;
+						var rx = (int)values.Pop().NumericValue;
 						var g = sourceArray[rx, ry] as GridCell;
 
 						if (g == null) values.Push(new CValue());
@@ -70,8 +70,8 @@ namespace DBSS.Calculations {
 						return true;
 					}
 				case "$f": {// function string at coords
-						var rx = (int)values.Pop().NumericValue;
 						var ry = (int)values.Pop().NumericValue;
+						var rx = (int)values.Pop().NumericValue;
 						var g = sourceArray[rx, ry] as GridCell;
 
 						if (g == null) values.Push(new CValue());
@@ -81,8 +81,8 @@ namespace DBSS.Calculations {
 						return true;
 					}
 				case "$n": {// name at coords
-						var rx = (int)values.Pop().NumericValue;
 						var ry = (int)values.Pop().NumericValue;
+						var rx = (int)values.Pop().NumericValue;
 						var g = sourceArray[rx, ry] as GridCell;
 
 						if (g == null) values.Push(new CValue());
