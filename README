@@ -21,7 +21,7 @@ Operators:
 	!  
 	
 Constants defined: (case insensitive)
-	pi - Value of PI
+	pi - Value of π
 	e  - Value of e
 	R  - Row (Y-value) of current cell
 	C  - Column (X-value) of current cell
@@ -43,5 +43,7 @@ TODO
 ----
  - More common functions
  - Lookup by cell name
+ - Lookup by truth-table (1D and 2D to start with, possible reduction sets for 3+D)
+ - Colour code cells by what fields are populated.
  - Use named cells as functions in formulae
 
